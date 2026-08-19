@@ -1,0 +1,117 @@
+{
+  "canonical_ground_truth": {
+    "names": [
+      "Arjun",
+      "Maya",
+      "Nisha",
+      "Rhea"
+    ],
+    "roles": {
+      "Arjun": "son",
+      "Maya": "mother",
+      "Nisha": "likely sibling or close relative",
+      "Rhea": "acquaintance mentioned in context of potential relocation"
+    },
+    "stable_traits": {
+      "Arjun": "software engineer, uses humor and food as coping, often forgets to call, sends memes, has a different time zone from Maya",
+      "Maya": "caring mother, goes to temple, reads books, watches films, has a job that involves careful looking, prefers calls over memes, prays for Arjun and Nisha"
+    }
+  },
+  "life_events": [
+    {
+      "date": "2025-10-19",
+      "event": "Maya went to temple."
+    },
+    {
+      "date": "2025-11-28",
+      "event": "Maya prayed for both Arjun and Nisha."
+    },
+    {
+      "date": "2026-01-19",
+      "event": "Maya sent something to Arjun."
+    },
+    {
+      "date": "2026-02-14",
+      "event": "Arjun sent a photo of rajma and rice."
+    },
+    {
+      "date": "2026-04-17",
+      "event": "Owner changed terms and Rhea may relocate for work."
+    },
+    {
+      "date": "2026-05-01",
+      "event": "Arjun asked Maya to teach him how to make rajma properly."
+    },
+    {
+      "date": "2026-06-21",
+      "event": "Maya mentioned deleting Aug 22-Sept 2 from her calendar."
+    },
+    {
+      "date": "2026-08-18",
+      "event": "Arjun arranged a gift delivery operation."
+    },
+    {
+      "date": "2026-08-27",
+      "event": "Maya asked Arjun to send a ticket."
+    }
+  ],
+  "knowledge_updates": [
+    {
+      "topic": "Arjun's cooking skill",
+      "before": "Arjun described his cooking as 'generous word' implying poor skill (e.g., 2025-10-20: 'Cook is a generous word.')",
+      "after": "Arjun expressed desire to learn proper rajma from Maya (2026-05-01: 'Teach me your rajma properly. Mine still tastes like a software beta.')",
+      "changed_around": "2026-05"
+    }
+  ],
+  "evaluation_notes": [
+    "Arjun's exact age and location are not stated.",
+    "Maya's exact job title is not stated.",
+    "Nisha's exact relationship (sister, cousin, etc.) is not stated.",
+    "Whether Arjun lives alone or with others is not stated.",
+    "The nature of the 'gift delivery operation' and the 'ticket' are not specified.",
+    "The meaning of 'Aug 22-Sept 2' (vacation, work, etc.) is not specified.",
+    "Whether Arjun is in San Francisco or another location is ambiguous.",
+    "The outcome of Rhea's potential relocation is not mentioned.",
+    "The exact time zone difference between Arjun and Maya is not given.",
+    "The context of 'food crime' (what he ate) is not specified."
+  ],
+  "preferences": [
+    {
+      "who": "Arjun",
+      "preference": "coping mechanism: jokes and carbohydrates",
+      "evidence_hint": "My coping mechanism is jokes and carbohydrates."
+    },
+    {
+      "who": "Arjun",
+      "preference": "uses memes as sibling support",
+      "evidence_hint": "Memes are a legitimate sibling support protocol."
+    },
+    {
+      "who": "Maya",
+      "preference": "prefers actual phone calls over memes",
+      "evidence_hint": "Actually call. Don't send a meme and count it."
+    },
+    {
+      "who": "Maya",
+      "preference": "enjoys books and films",
+      "evidence_hint": "Watched a very good film tonight. / This book is getting better."
+    },
+    {
+      "who": "Maya",
+      "preference": "goes to temple for peace",
+      "evidence_hint": "Went to temple this morning. Very peaceful."
+    },
+    {
+      "who": "Maya",
+      "preference": "concerned about Arjun eating and sleeping",
+      "evidence_hint": "Did you eat? / Very funny. Sleep on time."
+    }
+  ],
+  "_meta": {
+    "dataset": "mother_son",
+    "derived_by_llm": true,
+    "model": "deepseek/deepseek-v4-flash",
+    "sample_size": 220,
+    "total_messages": 1235
+  }
+}

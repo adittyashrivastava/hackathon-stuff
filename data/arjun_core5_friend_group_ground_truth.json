@@ -1,0 +1,257 @@
+{
+  "group_name": "Core Five (synthetic placeholder)",
+  "members": [
+    "Arjun",
+    "Gopal",
+    "Priyanka",
+    "Rahul",
+    "Akhil"
+  ],
+  "canonical_continuity": {
+    "Arjun": {
+      "location_2026": "San Francisco, USA",
+      "spouse": "Ananya",
+      "married_on": "2026-08-23",
+      "children_2026": 0,
+      "school": "St. Xavier's School, Bengaluru",
+      "10th_score_percent": 90,
+      "study_track": "Science",
+      "relationship_to_Gopal": "Best friends since first standard; most emotionally expressive of the two"
+    },
+    "Gopal": {
+      "location_origin": "Bengaluru, India",
+      "spouse": "Meera",
+      "married_on": "2019-12-14",
+      "children": [
+        {
+          "name": "Tara",
+          "born": "2021-09-07"
+        },
+        {
+          "name": "Kabir",
+          "born": "2024-06-02"
+        }
+      ],
+      "school_history": [
+        "St. Xavier's School through seventh grade",
+        "Baldwin Boys' High School from eighth grade"
+      ],
+      "10th_score_percent": 92,
+      "study_track": "Commerce + Mathematics",
+      "relationship_to_Arjun": "Best friends since first standard; deeply loyal but less expressive"
+    },
+    "Priyanka": {
+      "school": "St. Xavier's School, Bengaluru",
+      "profession": "Doctor",
+      "personality": "Warmest and kindest member of the group; usually de-escalates arguments",
+      "marital_status_2026": "Married",
+      "child": {
+        "name": "Rohan",
+        "age_in_2026": 4
+      },
+      "school_history_note": "Both Arjun and Gopal had a crush on her when they were young; now purely affectionate friendship"
+    },
+    "Rahul": {
+      "school": "St. Xavier's School, Bengaluru",
+      "personality": "Quick wit, sports obsessed, enjoys provoking arguments for entertainment",
+      "marital_status_2026": "Married",
+      "children_2026": 1
+    },
+    "Akhil": {
+      "connection": "Gopal's college roommate; joined the school-friend circle through Gopal",
+      "personality": "Dry, confident, pragmatic; very close to Gopal",
+      "marital_status_2026": "Married",
+      "children_2026": 1
+    }
+  },
+  "hidden_dynamics_for_evaluation": {
+    "Arjun_Akhil": "Arjun has a mild, mostly unspoken jealousy of Akhil's closeness with Gopal. It surfaces indirectly as unnecessary disagreement, teasing, or contrarian responses.",
+    "Arjun_Gopal": "Deepest dyadic bond in the group. Existing canon must be retained.",
+    "Gopal_Akhil": "Close due to being college roommates.",
+    "Priyanka_group": "Everyone has a soft corner for her; she is the emotional stabilizer.",
+    "Rahul_group": "Often stirs debate and keeps banter moving."
+  },
+  "life_events": [
+    {
+      "date": "2016-01-16",
+      "event": "Rahul marriage",
+      "detail": "Rahul marries Kavya"
+    },
+    {
+      "date": "2017-04-09",
+      "event": "Priyanka marriage",
+      "detail": "Priyanka marries Sameer"
+    },
+    {
+      "date": "2018-05-20",
+      "event": "Akhil marriage",
+      "detail": "Akhil marries Nidhi"
+    },
+    {
+      "date": "2019-12-14",
+      "event": "Gopal marriage",
+      "detail": "Gopal marries Meera"
+    },
+    {
+      "date": "2020-08-18",
+      "event": "Priyanka child",
+      "detail": "Priyanka's son Rohan is born"
+    },
+    {
+      "date": "2021-09-07",
+      "event": "Gopal child",
+      "detail": "Tara is born"
+    },
+    {
+      "date": "2022-03-03",
+      "event": "Rahul child",
+      "detail": "Rahul and Kavya have a daughter, Mira"
+    },
+    {
+      "date": "2023-11-12",
+      "event": "Akhil child",
+      "detail": "Akhil and Nidhi have a son, Dev"
+    },
+    {
+      "date": "2024-06-02",
+      "event": "Gopal child",
+      "detail": "Kabir is born"
+    },
+    {
+      "date": "2026-08-23",
+      "event": "Arjun marriage",
+      "detail": "Arjun marries Ananya"
+    }
+  ],
+  "arjun_bengaluru_visits": [
+    {
+      "arrival": "2016-12-27",
+      "departure": "2017-01-03"
+    },
+    {
+      "arrival": "2017-08-10",
+      "departure": "2017-08-20"
+    },
+    {
+      "arrival": "2018-11-08",
+      "departure": "2018-11-18"
+    },
+    {
+      "arrival": "2019-12-10",
+      "departure": "2019-12-22"
+    },
+    {
+      "arrival": "2020-02-05",
+      "departure": "2020-02-14"
+    },
+    {
+      "arrival": "2021-11-15",
+      "departure": "2021-11-24"
+    },
+    {
+      "arrival": "2022-09-12",
+      "departure": "2022-09-22"
+    },
+    {
+      "arrival": "2023-12-18",
+      "departure": "2023-12-29"
+    },
+    {
+      "arrival": "2025-07-05",
+      "departure": "2025-07-18"
+    },
+    {
+      "arrival": "2026-08-18",
+      "departure": "2026-08-30"
+    }
+  ],
+  "group_facts": [
+    {
+      "fact_id": "gf001",
+      "attribute": "core_group_members",
+      "value": [
+        "Arjun",
+        "Gopal",
+        "Priyanka",
+        "Rahul",
+        "Akhil"
+      ],
+      "valid_from": "2015-09-01",
+      "status": "current"
+    },
+    {
+      "fact_id": "gf002",
+      "attribute": "partners_in_core_group",
+      "value": "No. Core group remains five friends only.",
+      "valid_from": "2017-04-15",
+      "status": "current"
+    },
+    {
+      "fact_id": "gf003",
+      "attribute": "spouse_group",
+      "value": "Separate group created for partners/spouses",
+      "valid_from": "2017-04-15",
+      "status": "current"
+    },
+    {
+      "fact_id": "gf004",
+      "attribute": "meeting_pattern",
+      "value": "Most reliable full-group meetups happen when Arjun visits Bengaluru",
+      "valid_from": "2016-12",
+      "status": "current"
+    },
+    {
+      "fact_id": "gf005",
+      "attribute": "activity_pattern",
+      "value": "Bursty: long active runs followed by 1-2 week quiet gaps",
+      "valid_from": "2015-09-01",
+      "status": "current"
+    }
+  ],
+  "evaluation_notes": [
+    "Do not infer that Arjun and Priyanka are romantically involved in adulthood. The school crush is historical.",
+    "Do not state Arjun is jealous of Akhil as an explicit conversational fact unless performing latent-dynamics inference. It is deliberately encoded only through subtext.",
+    "Preserve the Arjun-Gopal timeline from the prior dataset: Gopal married Meera in 2019; Tara born 2021; Kabir born 2024; Arjun married Ananya in 2026 and has no children by dataset end.",
+    "The core five-person group intentionally excludes spouses. A separate spouse-inclusive group exists.",
+    "Akhil did not attend school with the other four. He entered the circle through Gopal in college."
+  ],
+  "dataset_stats": {
+    "coverage": [
+      "2015-09-01",
+      "2026-08-31"
+    ],
+    "messages": 2800,
+    "bursts": 17,
+    "messages_by_burst": {
+      "burst_01": 138,
+      "burst_02": 158,
+      "burst_03": 168,
+      "burst_04": 165,
+      "burst_05": 168,
+      "burst_06": 194,
+      "burst_07": 131,
+      "burst_08": 184,
+      "burst_09": 162,
+      "burst_10": 126,
+      "burst_11": 157,
+      "burst_12": 155,
+      "burst_13": 148,
+      "burst_14": 153,
+      "burst_15": 200,
+      "burst_16": 211,
+      "burst_17": 182
+    },
+    "messages_by_depth": {
+      "deep": 960,
+      "short": 280,
+      "medium": 1560
+    },
+    "messages_by_sender": {
+      "Akhil": 409,
+      "Arjun": 800,
+      "Gopal": 460,
+      "Rahul": 553,
+      "Priyanka": 578
+    }
+  }
+}

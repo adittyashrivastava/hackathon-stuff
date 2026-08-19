@@ -1,0 +1,137 @@
+{
+  "canonical_ground_truth": {
+    "participants": [
+      "Prof. Jatin",
+      "Arjun"
+    ],
+    "relationship": "mentor/mentee (professor and student/former student)",
+    "arjun_role": "graduate student (apparent from research discussions and later references to teaching/speaking)",
+    "jatin_role": "professor, research advisor",
+    "arjun_traits": [
+      "tends to think computationally",
+      "concerned with external validation",
+      "reflective about ambition and change",
+      "occasionally annoyed by impractical advice"
+    ],
+    "jatin_traits": [
+      "direct",
+      "emphasizes experimental discipline",
+      "values understanding over purely higher numbers",
+      "provides career/life advice",
+      "remembers first impressions (did not like Arjun initially)"
+    ],
+    "key_locations": [
+      "office (Prof. Jatin's)",
+      "systems class (Prof. Jatin's, likely university)"
+    ],
+    "known_others": [
+      "Karthik (got an offer)",
+      "Neha (sent a new draft)"
+    ]
+  },
+  "life_events": [
+    {
+      "date": "2012-01-10",
+      "event": "Prof. Jatin invites Arjun to discuss a project."
+    },
+    {
+      "date": "2013-01-22",
+      "event": "Arjun submits something (likely a paper or project)."
+    },
+    {
+      "date": "2021-09-02",
+      "event": "Karthik gets an offer (likely job or academic)."
+    },
+    {
+      "date": "2022-09-17",
+      "event": "Prof. Jatin invites Arjun to speak to his systems class (Arjun is present that week)."
+    },
+    {
+      "date": "2023-08-28",
+      "event": "Arjun comments on feeling love as calm, not dramatic."
+    },
+    {
+      "date": "2026-08-25",
+      "event": "Arjun thanks Prof. Jatin for coming to an event; Prof. Jatin confirms it was accurate."
+    }
+  ],
+  "knowledge_updates": [
+    {
+      "topic": "research methodology (congestion detection/localization)",
+      "before": "Arjun uses combined metrics/labels for detection+localization.",
+      "after": "Arjun separates detection from localization after Prof. Jatin's insistence.",
+      "changed_around": "2012-04-24"
+    },
+    {
+      "topic": "feature engineering (routing assumptions)",
+      "before": "Arjun includes implicit routing assumptions in features.",
+      "after": "Arjun plans to test with ECMP and randomized path selection to avoid smuggling assumptions.",
+      "changed_around": "2012-05-24"
+    },
+    {
+      "topic": "interpretability vs. accuracy trade-off",
+      "before": "Arjun thinks 3% accuracy drop is acceptable for interpretability (pruning).",
+      "after": "Prof. Jatin suggests the 3% may be worth paying for correct labeling.",
+      "changed_around": "2012-03-02"
+    },
+    {
+      "topic": "normalization of congestion metrics",
+      "before": "Arjun uses global normalization.",
+      "after": "Prof. Jatin advises per-switch normalization first to avoid hiding topology effects.",
+      "changed_around": "2012-11-20"
+    }
+  ],
+  "evaluation_notes": [
+    "Arjun's specific career titles/roles (e.g., industry vs. academia) are never stated outright.",
+    "The exact research domain (e.g., specific networking technologies like SDN or datacenter) is not explicitly named.",
+    "There is no evidence that Arjun and Prof. Jatin meet in person regularly; only references to office visits and class visits.",
+    "Prof. Jatin's personal life (age, institution, family) is never revealed.",
+    "Arjun's love relationship mentioned in 2023-08-28 is not specified further (who, gender, etc.).",
+    "The 'event' of 2026-08-25 that Arjun thanks Prof. Jatin for is not described; it could be a wedding, graduation, funeral, etc. Do not assume.",
+    "Prof. Jatin's initial dislike of Arjun (2026-08-21) is explicitly stated; do not soften or expand that statement."
+  ],
+  "preferences": [
+    {
+      "who": "Prof. Jatin",
+      "preference": "Values understanding why a system fails over simply having higher accuracy numbers.",
+      "evidence_hint": "\"Operators may prefer understanding why the system is wrong.\""
+    },
+    {
+      "who": "Prof. Jatin",
+      "preference": "Insists on changing one variable at a time in experiments.",
+      "evidence_hint": "\"Change one variable at a time.\""
+    },
+    {
+      "who": "Prof. Jatin",
+      "preference": "Prefers direct scheduling ('pick a time and show up') rather than being worked around.",
+      "evidence_hint": "\"Do not 'work around me.' Pick a time and show up.\""
+    },
+    {
+      "who": "Prof. Jatin",
+      "preference": "Believes life decisions become clearer when described concretely (e.g., 'Tuesday resolution').",
+      "evidence_hint": "\"Describe the Tuesday, not the title.\""
+    },
+    {
+      "who": "Arjun",
+      "preference": "Tends to optimize for external validation and impressive-sounding work over daily experience.",
+      "evidence_hint": "\"I think I'm optimizing too much for external validation again.\""
+    },
+    {
+      "who": "Arjun",
+      "preference": "Wonders whether people can truly change or just manage tendencies.",
+      "evidence_hint": "\"Do you think people actually change, or just get better at managing the same tendencies?\""
+    },
+    {
+      "who": "Arjun",
+      "preference": "Prefers building difficult things but also wants to be close to decisions and people.",
+      "evidence_hint": "\"I want to build difficult things, but I also like being close to decisions and people.\""
+    }
+  ],
+  "_meta": {
+    "dataset": "prof_jatin",
+    "derived_by_llm": true,
+    "model": "deepseek/deepseek-v4-flash",
+    "sample_size": 220,
+    "total_messages": 2000
+  }
+}
