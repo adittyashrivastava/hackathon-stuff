@@ -92,6 +92,14 @@ of noisy chat messages is genuinely hard for a retrieval-then-synthesize pipelin
 harder round didn't change the shape of the result, just sharpened it — this spread is
 a real, reproducible finding, not a broken harness.
 
+**Ablation — does feeding HydraDB's `graph_context` triples to the answer LLM help?**
+No: it's a **-4.1pt regression** (52.52% → 48.41%), worst on `information_extraction`
+(-13.2pts) and `multi_session_reasoning` (-10.3pts) — the raw entity-relationship
+triples appear to dilute precise fact-recall and erode abstention more than they add
+useful cross-reference signal. Full breakdown in
+`results/comparison_graph_context.md`. `src/ask.py` defaults to chunks-only
+accordingly (`--use-graph-context` opts back in for reproducing the comparison).
+
 ## Setup
 
 ```bash
