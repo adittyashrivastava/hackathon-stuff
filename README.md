@@ -129,6 +129,9 @@ python src/report.py
 python src/ask.py "How has Arjun and Gopal's friendship changed since Gopal got married?"
 ```
 
+See **[`EVAL_REPORT.md`](EVAL_REPORT.md)** for the full consolidated write-up: results,
+example judged cases, and the graph-context ablation.
+
 ## Attribution
 
 - **[HydraDB](https://hydradb.com)** — the memory/retrieval substrate this entire
