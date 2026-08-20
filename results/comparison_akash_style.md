@@ -83,6 +83,45 @@ Both single-shot and agentic default to guessing "child" from an ambiguous line
 This is a corpus/product-design limitation, not a bug: a fact that was never actually
 placed into any ingested conversation cannot be retrieved from it.
 
+## Performance and retrieval quality, not just answer quality
+
+The comparison above is answer-quality only. Re-ran both backends sequentially
+(1 worker, for clean uncontended timing) with instrumentation added to capture
+latency and which message IDs actually got retrieved:
+
+| | single-shot (dedup) | agentic |
+|---|---|---|
+| **Mean answer quality** (this run) | 33.0% | 35.0% |
+| **Mean latency per question** | ~15.6s | ~71.0s (**~4.5x slower**) |
+| **Mean retrieval calls per question** | 1 (fixed) | 6.3 (range 2-8) |
+
+Two independent runs (parallel: 36% vs 40%; sequential: 33% vs 35%) agree on
+direction — agentic is modestly better on accuracy, consistently, but at a real and
+substantial latency/cost multiple. This is a genuine trade-off to make deliberately,
+not a free upgrade: use agentic where correctness matters more than response time
+(e.g. an offline eval, a "deep research" mode), single-shot where latency matters
+(an interactive chat).
+
+**Retrieval quality specifically** (does the right evidence actually get retrieved,
+independent of whether the final answer is correct) is hard to measure on this
+question set: only one of the 10 questions (akash_007) has evidence that's actual
+message IDs rather than ground-truth field names, so an evidence-hit-rate metric
+(`run_eval.py`'s `evidence_hit_rate` field) only fires for that one. There,
+single-shot retrieved 100% of the evidence (4/4 messages) and scored `correct`;
+agentic retrieved 75% (3/4) and scored `partially_correct` — small sample, but
+directionally what you'd expect (retrieval completeness tracking answer quality).
+
+**A second real corpus limitation, found while measuring this**: three of the trip
+questions (akash_004-006) ask for trip *destination names*, but grep confirms zero
+mentions of any trip destination anywhere in the ingested gopal transcript — only
+trip *numbers* are referenced in-corpus (e.g. "Trip #11... if I freeze" hinting at,
+but never naming, a cold destination). Both methods score ~0 on the destination-name
+part of these questions, correctly, because that information was never in the corpus
+to retrieve — not a retrieval failure. Excluding these 3 unanswerable-as-posed
+questions, both methods land at essentially the same ~43% on the remaining 7 valid
+questions in this run — the accuracy gap above is partly diluted by both methods
+correctly failing on the same unanswerable items.
+
 ## A caught eval-authoring bug (worth stating plainly)
 
 The first version of akash_007 asked about Maya "blocking out" Aug 22-Sept 2, with a

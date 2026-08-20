@@ -14,6 +14,7 @@ Usage:
 import argparse
 import json
 import os
+import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -40,7 +41,12 @@ def answer_single_shot(question: dict) -> dict:
         collections=question.get("collections_in_scope"),
         instruction=question.get("instruction"),
     )
-    return {"answer": result["answer"], "num_chunks_retrieved": result["num_chunks_retrieved"]}
+    return {
+        "answer": result["answer"],
+        "num_chunks_retrieved": result["num_chunks_retrieved"],
+        "num_raw_chunks_before_dedup": result.get("num_raw_chunks_before_dedup"),
+        "retrieved_message_ids": result["retrieved_message_ids"],
+    }
 
 
 def answer_agentic(question: dict) -> dict:
@@ -52,16 +58,38 @@ def answer_agentic(question: dict) -> dict:
         "num_searches": result["num_searches"],
         "steps_used": result["steps_used"],
         "search_log": result["search_log"],
+        "retrieved_message_ids": result["retrieved_message_ids"],
     }
 
 
 BACKENDS = {"single_shot": answer_single_shot, "agentic": answer_agentic}
 
 
+def evidence_hit_rate(question: dict, retrieved_message_ids: list) -> float | None:
+    """Fraction of the question's evidence entries that look like message IDs (not
+    ground-truth field names) that actually appear in what was retrieved. Returns
+    None if the question's evidence has no message-ID-shaped entries to check."""
+    retrieved = set(retrieved_message_ids or [])
+    # message IDs in this project all look like <prefix>_<digits>, e.g. grp_01595,
+    # msg_00969, ag_00001, pj_00737 — ground-truth field-name evidence (e.g.
+    # "canonical_continuity", "life_events") doesn't match this shape.
+    import re
+
+    id_pattern = re.compile(r"^[a-z]{2,3}_\d{4,6}$")
+    evidence_ids = [e for e in question.get("evidence", []) if id_pattern.match(e)]
+    if not evidence_ids:
+        return None
+    hits = sum(1 for e in evidence_ids if e in retrieved)
+    return hits / len(evidence_ids)
+
+
 def run_one(question: dict, backend_fn) -> dict:
     try:
+        t0 = time.time()
         answer_info = backend_fn(question)
+        elapsed_s = time.time() - t0
         verdict = judge_answer(question, answer_info["answer"])
+        retrieved_ids = answer_info.get("retrieved_message_ids", [])
         return {
             "qid": question["qid"],
             "category": question["category"],
@@ -70,6 +98,8 @@ def run_one(question: dict, backend_fn) -> dict:
             "gold_answer": question["gold_answer"],
             "answerable": question.get("answerable", True),
             "generated_answer": answer_info["answer"],
+            "answer_latency_s": round(elapsed_s, 2),
+            "evidence_hit_rate": evidence_hit_rate(question, retrieved_ids),
             **{k: v for k, v in answer_info.items() if k != "answer"},
             **verdict,
         }

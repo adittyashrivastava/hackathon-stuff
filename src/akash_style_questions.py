@@ -86,6 +86,17 @@ QUESTIONS = [
         "source": "akash_style_generated",
     },
     # --- gopal: trip_registry multi-hop filtering/counting ---
+    # CAVEAT (found during the performance/retrieval investigation, 2026-08-20):
+    # verified against the raw transcript that trip DESTINATION NAMES (Mysuru, Goa,
+    # Manali, etc.) never appear in any ingested gopal message — grep confirms zero
+    # hits for every destination in trip_registry. Only trip NUMBERS are referenced
+    # in-corpus (e.g. "Fine. Trip #11. If I freeze, tell Priyanka I always loved
+    # her." — matching trip11's Dec-2016 Prague date, with "freeze" hinting at the
+    # cold destination without naming it). The destination-name portion of these
+    # three questions is therefore unanswerable from the ingested corpus by ANY
+    # method — this is the same class of issue as the Kavya-wife-vs-child case: a
+    # fact that exists only in ground-truth metadata, never written into a message.
+    # Left in deliberately as a documented example rather than quietly fixed.
     {
         "question": "How many trips did Arjun and Gopal take together during the roughly four years Gopal lived in Delhi (2011-2015), and which destinations were those?",
         "gold_answer": "6 trips: Manali (2011-05), Jaipur (2012-12), Sri Lanka (2013-06), Bangkok (2014-04), Singapore (2014-12), and Bali (2015-07).",
