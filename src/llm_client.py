@@ -66,6 +66,42 @@ def chat(
     raise last_exc
 
 
+def chat_with_tools(
+    model: str, messages: list[dict], tools: list[dict], temperature: float = 0.2, retries: int = 4
+) -> dict:
+    """Like chat(), but for tool-calling loops: returns the full assistant message
+    object (role, content, tool_calls) instead of just the text content, since the
+    caller needs to inspect tool_calls to drive an agentic loop."""
+    body = {"model": model, "messages": messages, "temperature": temperature, "tools": tools}
+
+    last_exc = None
+    for attempt in range(retries + 1):
+        try:
+            resp = requests.post(
+                _URL,
+                headers={
+                    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                json=body,
+                timeout=120,
+            )
+        except _NETWORK_EXCEPTIONS as e:
+            last_exc = e
+            if attempt < retries:
+                time.sleep(2.0 * (attempt + 1))
+                continue
+            raise
+        if resp.status_code == 429 or resp.status_code >= 500:
+            if attempt < retries:
+                time.sleep(2.0 * (attempt + 1))
+                continue
+        if not resp.ok:
+            raise RuntimeError(f"OpenRouter {resp.status_code}: {resp.text[:2000]}")
+        return resp.json()["choices"][0]["message"]
+    raise last_exc
+
+
 def chat_json(model: str, messages: list[dict], temperature: float = 0.2, retries: int = 2) -> dict:
     last_err = None
     for attempt in range(retries + 1):

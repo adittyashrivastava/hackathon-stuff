@@ -83,25 +83,58 @@ def format_graph_context(graph_context: dict, limit: int = 25) -> str:
     return "\n".join(lines) if lines else "(no graph relations returned)"
 
 
+def dedupe_chunks(chunks: list[dict], keep: int) -> list[dict]:
+    """Some of these datasets reuse near-identical scripted banter lines dozens of
+    times (e.g. "Easy to say without kids." x10). Because they're near-duplicates,
+    they all score similarly and can flood out a single, sparse, highly-informative
+    chunk (e.g. a one-off birth announcement) that never cracks the top-K otherwise.
+    Dedupe by normalized content (sender+text, timestamp stripped) before truncating
+    to `keep`, so repeated filler doesn't crowd out distinct signal."""
+    seen = set()
+    deduped = []
+    for c in chunks:
+        content = c.get("chunk_content", "")
+        key = content.split("] ", 1)[-1] if "] " in content else content
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(c)
+        if len(deduped) >= keep:
+            break
+    return deduped
+
+
 def answer_question(
     question: str,
     collections: list[str] | None = None,
     instruction: str | None = None,
     max_results: int = 15,
     use_graph_context: bool = False,
+    overfetch_factor: int = 4,
 ) -> dict:
     """use_graph_context=False (default) matches the better-performing configuration
     from our ablation (results/comparison_graph_context.md): feeding HydraDB's raw
     graph triples into the answer prompt measured a -4.1pt regression overall across
     242 eval questions vs. chunks alone. graph_context is still always requested from
     HydraDB (mode=thinking computes it regardless) — this flag only controls whether
-    it's included in the answer-synthesis prompt, so the ablation stays reproducible."""
+    it's included in the answer-synthesis prompt, so the ablation stays reproducible.
+
+    overfetch_factor: request max_results*overfetch_factor raw chunks from HydraDB,
+    then dedupe near-identical content down to max_results before answering — fixes a
+    real failure mode where repeated scripted lines (e.g. "Easy to say without kids."
+    x10) crowd out a single sparse-but-critical fact (e.g. a birth announcement) that
+    never reaches the top-K without this."""
     collections = collections or ALL_COLLECTIONS
     result = hydra_client.query(
-        DATABASE, question, collections=collections, max_results=max_results, graph_context=True
+        DATABASE,
+        question,
+        collections=collections,
+        max_results=max_results * overfetch_factor,
+        graph_context=True,
     )
     data = result.get("data", {})
-    chunks = data.get("chunks", [])
+    raw_chunks = data.get("chunks", [])
+    chunks = dedupe_chunks(raw_chunks, keep=max_results)
     graph_context = data.get("graph_context", {})
 
     user_prompt = question
@@ -124,6 +157,7 @@ def answer_question(
         "answer": answer,
         "collections_queried": collections,
         "num_chunks_retrieved": len(chunks),
+        "num_raw_chunks_before_dedup": len(raw_chunks),
         "num_graph_paths_retrieved": len(graph_context.get("query_paths", [])),
         "used_graph_context_in_prompt": use_graph_context,
         "retrieved_message_ids": [c.get("metadata", {}).get("message_id") for c in chunks],

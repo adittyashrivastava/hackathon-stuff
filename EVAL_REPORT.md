@@ -34,7 +34,8 @@ Each question carries a gold answer, a rationale, supporting evidence (message I
 ground-truth fields), and an `answerable` flag. See `src/generate_questions.py`.
 
 **Answering**: `src/ask.py` — HydraDB `/query` (`type=memory`, `query_by=hybrid`,
-`mode=thinking`) retrieves up to 15 chunks across the relevant collection(s); an LLM
+`mode=thinking`) over-fetches (`max_results*4`) and dedupes near-identical chunks
+down to the top 15 across the relevant collection(s) — see §5 for why; an LLM
 (DeepSeek V4 Flash via OpenRouter) synthesizes the final answer strictly from those
 chunks, instructed to hedge/abstain rather than guess when evidence is thin.
 
@@ -46,20 +47,23 @@ a stale one). Verdicts: `correct`, `partially_correct`, `incorrect`, `hallucinat
 
 ## 2. Headline result
 
-**242 questions, 0 pipeline errors, 52.52% overall mean score.**
+**242 questions, 0 pipeline errors, 52.31% overall mean score** (current, with the
+over-fetch+dedup retrieval fix from §5 applied — see `results/comparison_dedup.md`
+for the before/after; the fix is a wash in aggregate, ±0.2pt, but shifts individual
+categories meaningfully in both directions).
 
 | category | N | mean score | correct | partial | incorrect | hallucinated |
 |---|---|---|---|---|---|---|
-| abstention | 24 | **89.6%** | 21 | 1 | 0 | 2 |
-| information_extraction | 25 | 61.2% | 13 | 3 | 8 | 1 |
-| preference_following | 24 | 61.3% | 14 | 2 | 6 | 2 |
-| multi_session_reasoning | 30 | 54.0% | 10 | 9 | 11 | 0 |
-| contradiction_resolution | 24 | 57.1% | 13 | 1 | 9 | 1 |
-| summarization | 24 | 45.4% | 7 | 5 | 5 | 7 |
-| instruction_following | 20 | 42.5% | 6 | 3 | 10 | 1 |
-| event_ordering | 23 | 40.4% | 8 | 2 | 9 | 4 |
-| temporal_reasoning | 24 | 37.9% | 8 | 2 | 12 | 2 |
-| knowledge_update | 24 | **32.9%** | 6 | 2 | 15 | 1 |
+| abstention | 24 | **80.0%** | 18 | 2 | 1 | 3 |
+| contradiction_resolution | 24 | 67.5% | 15 | 2 | 7 | 0 |
+| instruction_following | 20 | 59.0% | 10 | 3 | 6 | 1 |
+| information_extraction | 25 | 56.8% | 12 | 3 | 9 | 1 |
+| summarization | 24 | 56.7% | 10 | 3 | 7 | 3 |
+| multi_session_reasoning | 30 | 52.3% | 11 | 6 | 11 | 2 |
+| preference_following | 24 | 47.9% | 11 | 1 | 10 | 2 |
+| temporal_reasoning | 24 | 37.9% | 8 | 0 | 13 | 3 |
+| event_ordering | 23 | 35.2% | 7 | 1 | 11 | 4 |
+| knowledge_update | 24 | **30.0%** | 5 | 1 | 17 | 0 |
 
 Zero categories landed at a flat 0% or 100% — the spread itself is a signal the harness
 is measuring something real, not degenerately broken.
@@ -73,8 +77,8 @@ thousands of noisy, repetitive chat messages — a believable limitation of a
 retrieve-then-synthesize architecture over long, informal chat history, not a broken
 eval.
 
-By dataset: `mother_son` (71%) and `prof_jatin` (56%) outperform `friend_group` (39%)
-and `gopal` (44%) — plausible, since the 5-person group chat and the 10-year 1:1
+By dataset: `mother_son` (68%) outperforms `gopal` (53%), `prof_jatin` (52%), and
+`friend_group` (35%) — plausible, since the 5-person group chat and the 10-year 1:1
 thread are noisier/more repetitive (lots of near-duplicate banter, per the dataset
 stats in `data/*_ground_truth*.json`) than the other two.
 
@@ -106,7 +110,11 @@ entity-relationship triples (`source --predicate--> target`, with a supporting
 sentence) extracted across the ingested conversations. We re-ran all 242 questions
 with those triples included in the answer-synthesis prompt alongside the retrieved
 chunks, to see whether giving the answering LLM the graph as well as the raw text
-helps.
+helps. (Measured before the over-fetch+dedup retrieval fix in §5 — against the
+52.52% pre-dedup baseline, not the current 52.31%. Not re-run post-fix; the two
+changes are orthogonal — one is what's *in* the prompt, the other is *which chunks*
+reach the prompt — but treat the exact deltas below as relative to that earlier
+baseline specifically.)
 
 **Result: a net regression, -4.1pts overall (52.52% → 48.41%).**
 
@@ -150,7 +158,33 @@ matching the better-performing configuration. `--use-graph-context` opts back in
 reproduce the comparison. Full raw results for both runs are in
 `results/eval_results_chunks_only.jsonl` and `results/eval_results_with_graph_context.jsonl`.
 
-## 5. Limitations
+## 5. Follow-up: a teammate's manual test case, and what it led to
+
+A teammate (Akash) sent a manual test question over Slack that the eval's automated
+question set hadn't covered: "who among Arjun's closest friends currently has
+children, and how did their family situations evolve?" — with a note that he wasn't
+sure whether a bad answer would be the model's fault or the dataset's.
+
+Investigating this by hand surfaced a real, previously-undetected retrieval bug: the
+friend_group dataset reuses scripted banter lines dozens of times (e.g. "Easy to say
+without kids." appears 10+ times), and these near-duplicates crowded out a single,
+sparse, highly-informative chunk (Gopal's actual birth announcements for his two kids)
+from ever reaching the top-K — confirmed by testing progressively more targeted
+queries, up to `max_results=120`, none of which surfaced it. Fixed with client-side
+over-fetch + dedup in `ask.py`. Also built and tested an agentic alternative
+(`src/agentic_ask.py`) — an LLM given an iterative `search_memories` tool instead of
+one shot — which fixed the motivating case outright and beat the fixed single-shot
+pipeline by 4pts (36% → 40%) on a 10-question hard multi-hop set, at the cost of
+2-9x more searches/LLM calls per question.
+
+Along the way, an eval-authoring bug of our own was caught and fixed: a gold answer
+written from a derived summary instead of the raw messages, corrected after both
+systems independently surfaced the real, better-grounded explanation. Full write-up,
+including the query-by-query retrieval diagnosis and the dedup ablation's per-category
+trade-offs: **[`results/comparison_akash_style.md`](results/comparison_akash_style.md)**
+and **[`results/comparison_dedup.md`](results/comparison_dedup.md)**.
+
+## 6. Limitations
 
 - `mother_son` and `prof_jatin` ground truth is LLM-derived from a transcript sample,
   not hand-authored — their eval numbers are inherently noisier than

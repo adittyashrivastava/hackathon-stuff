@@ -83,22 +83,36 @@ grounded in each dataset's ground truth + a spread sample of its transcript, and
 larger question set than the bare ground-truth files provide.
 
 See `results/report.md` for the full scored breakdown. Current run: **242 questions
-(126 standard + 116 adversarial/harder — see the `round` field), 52.52% overall mean
-score**. Strongest category: `abstention` (90% — the product is good at hedging
-instead of fabricating when evidence is thin). Weakest: `knowledge_update` (33%),
-`temporal_reasoning` (38%), and `event_ordering` (40%) — precisely locating *which*
+(126 standard + 116 adversarial/harder — see the `round` field), 52.31% overall mean
+score**. Strongest category: `abstention` (80% — the product is good at hedging
+instead of fabricating when evidence is thin). Weakest: `knowledge_update` (30%),
+`event_ordering` (35%), and `temporal_reasoning` (38%) — precisely locating *which*
 version of a fact is current, or the exact sequence/timing of events, across thousands
-of noisy chat messages is genuinely hard for a retrieval-then-synthesize pipeline. The
-harder round didn't change the shape of the result, just sharpened it — this spread is
-a real, reproducible finding, not a broken harness.
+of noisy chat messages is genuinely hard for a retrieval-then-synthesize pipeline. This
+spread is a real, reproducible finding, not a broken harness.
 
 **Ablation — does feeding HydraDB's `graph_context` triples to the answer LLM help?**
-No: it's a **-4.1pt regression** (52.52% → 48.41%), worst on `information_extraction`
-(-13.2pts) and `multi_session_reasoning` (-10.3pts) — the raw entity-relationship
-triples appear to dilute precise fact-recall and erode abstention more than they add
-useful cross-reference signal. Full breakdown in
+No: it measured a **-4.1pt regression** (52.52% → 48.41%, pre-dedup baseline), worst on
+`information_extraction` (-13.2pts) and `multi_session_reasoning` (-10.3pts) — the raw
+entity-relationship triples appear to dilute precise fact-recall and erode abstention
+more than they add useful cross-reference signal. Full breakdown in
 `results/comparison_graph_context.md`. `src/ask.py` defaults to chunks-only
 accordingly (`--use-graph-context` opts back in for reproducing the comparison).
+
+**Ablation — does over-fetching + deduping near-identical chunks help?** A teammate's
+manual test case (a friend-group question about children) turned up a real retrieval
+bug: this dataset reuses scripted banter lines dozens of times, and the near-duplicates
+crowded out a single, sparse, critical fact from ever reaching the top-K — confirmed
+down to `max_results=120`. Fixed by over-fetching and deduping before truncating
+(`ask.py`, on by default). Net effect on the full suite: a wash (**52.52% → 52.31%**),
+but not uniformly — helps categories needing information *diversity*
+(`instruction_following` +16.5, `summarization` +11.2, `contradiction_resolution`
++10.4) and hurts categories where *repetition itself is signal*
+(`preference_following` -13.3, `abstention` -9.6). Also tried an **agentic** search
+alternative (`src/agentic_ask.py` — an LLM with an iterative search tool instead of one
+shot), which fixed the motivating bug outright and beat single-shot by 4pts (36% → 40%)
+on a 10-question hard multi-hop set, at 2-9x the searches/LLM calls per question. Full
+write-up: `results/comparison_dedup.md` and `results/comparison_akash_style.md`.
 
 ## Setup
 
@@ -127,10 +141,18 @@ python src/report.py
 
 # ask a one-off question yourself (the product)
 python src/ask.py "How has Arjun and Gopal's friendship changed since Gopal got married?"
+
+# or use the agentic variant (iterative search instead of one shot — slower, sometimes better)
+python src/agentic_ask.py "Who among Arjun's closest friends currently has children?"
 ```
 
+`run_eval.py` also takes `--questions`, `--results`, and `--backend` (`single_shot` |
+`agentic`) to run any question set through either answer pipeline — used to produce
+the comparisons in `results/comparison_dedup.md` and `results/comparison_akash_style.md`.
+
 See **[`EVAL_REPORT.md`](EVAL_REPORT.md)** for the full consolidated write-up: results,
-example judged cases, and the graph-context ablation.
+example judged cases, the graph-context ablation, and the follow-up investigation into
+a teammate's manual test case (dedup fix + agentic search comparison).
 
 ## Attribution
 
